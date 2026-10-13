@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    /**
+     * Map the esm.sh URL import to the local node_modules copy.
+     * This lets VS Code resolve types for the Supabase client without
+     * needing the Deno extension or network access.
+     */
+    "paths": {
+      "https://esm.sh/@supabase/supabase-js@2": [
+        "../../../node_modules/@supabase/supabase-js/dist/module/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.d.ts"
+  ],
+  "exclude": []
+}
