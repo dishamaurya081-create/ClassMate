@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/useAuth';
-import { LockIcon, LogInIcon, UserIcon, AlertCircleIcon, GraduationCapIcon, SparklesIcon } from './Icons';
+import { LockIcon, LogInIcon, UserIcon, AlertCircleIcon, GraduationCapIcon } from './Icons';
 
 export const AuthScreen: React.FC = () => {
-  const { signIn, signUp, devLogin } = useAuth();
+  const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,12 +60,6 @@ export const AuthScreen: React.FC = () => {
       setErrorMsg(message);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleDevTestLogin = () => {
-    if (devLogin) {
-      devLogin(email || 'student@example.com', studentName || 'Student');
     }
   };
 
@@ -186,19 +180,6 @@ export const AuthScreen: React.FC = () => {
                 : 'Create Account & Continue'}
           </button>
 
-          {/* Dev / Test Mode Instant Evaluation Button */}
-          <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-            <button
-              type="button"
-              className="btn btn-secondary btn-block"
-              style={{ width: '100%', fontSize: '0.8rem', padding: '0.65rem' }}
-              onClick={handleDevTestLogin}
-              title="Instant login with student credentials to test onboarding, section filters, and timetable"
-            >
-              <SparklesIcon size={14} />
-              <span>Sign In with Test Account (Instant Test)</span>
-            </button>
-          </div>
 
           <div className="auth-footer-info" style={{ marginTop: '1rem', justifyContent: 'center' }}>
             <LockIcon size={13} />

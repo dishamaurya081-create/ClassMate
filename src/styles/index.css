@@ -1482,30 +1482,6 @@ input:checked + .toggle-slider:before {
   border: 1px solid var(--border-color);
 }
 
-.notif-test-section {
-  margin-top: 1.25rem;
-  padding: 1.15rem;
-  border-radius: var(--radius-md);
-  border: 1px dashed var(--border-color);
-  background: var(--bg-card-subtle);
-}
-
-.notif-test-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.notif-test-label {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.notif-test-sub {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
 
 .notif-test-feedback {
   margin-top: 0.75rem;

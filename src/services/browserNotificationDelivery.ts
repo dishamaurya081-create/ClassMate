@@ -65,69 +65,6 @@ export function sendNotification(title: string, options?: NotificationOptions): 
   }
 }
 
-/**
- * Sends a standalone test notification specifically for device & browser verification.
- * Does NOT mark any timetable class notification as sent.
- */
-export async function sendTestNotification(): Promise<{
-  success: boolean;
-  message: string;
-  permission: BrowserNotificationPermissionState;
-}> {
-  const permission = getNotificationPermission();
-
-  if (permission === 'unsupported') {
-    return {
-      success: false,
-      message: 'Browser Notification API is not supported on this device/browser.',
-      permission,
-    };
-  }
-
-  if (permission === 'denied') {
-    return {
-      success: false,
-      message: 'Notifications are blocked. Please enable notifications in your browser site settings.',
-      permission,
-    };
-  }
-
-  if (permission === 'default') {
-    return {
-      success: false,
-      message: 'Permission has not been granted yet. Please click "Allow Notifications" first.',
-      permission,
-    };
-  }
-
-  // Permission is 'granted'
-  try {
-    const testNotification = new Notification('ClassMate — Test Notification', {
-      body: 'Notifications are working on this device.',
-      tag: 'classmate-test-notification',
-      icon: '/favicon.ico',
-    });
-
-    testNotification.onclick = () => {
-      window.focus();
-      testNotification.close();
-    };
-
-    return {
-      success: true,
-      message: 'Test notification dispatched successfully! Check your desktop/device notification center.',
-      permission,
-    };
-  } catch (err: unknown) {
-    const errMsg = err instanceof Error ? err.message : 'Unknown error';
-    console.warn('Test notification execution failed:', err);
-    return {
-      success: false,
-      message: `Failed to dispatch test notification: ${errMsg}`,
-      permission,
-    };
-  }
-}
 
 /**
  * Browser implementation of NotificationDeliveryHandler.

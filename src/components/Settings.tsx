@@ -8,7 +8,6 @@ import {
   isNotificationSupported,
   getNotificationPermission,
   requestNotificationPermission,
-  sendTestNotification,
 } from '../services/browserNotificationDelivery';
 import {
   isWebPushSupported,
@@ -86,16 +85,11 @@ export const Settings: React.FC<SettingsProps> = ({
 
 
 
-  // Browser notification permission & test state
+  // Browser notification permission state
   const [permissionState, setPermissionState] = useState<BrowserNotificationPermissionState>(() =>
     getNotificationPermission()
   );
   const [isRequestingPermission, setIsRequestingPermission] = useState(false);
-  const [testNotificationFeedback, setTestNotificationFeedback] = useState<{
-    type: 'success' | 'warning' | 'error';
-    message: string;
-  } | null>(null);
-  const [isSendingTest, setIsSendingTest] = useState(false);
 
   // Push subscription state — initial value determined synchronously so no setState in effect
   const [pushStatus, setPushStatus] = useState<PushSubscriptionStatus>(() =>
@@ -122,7 +116,6 @@ export const Settings: React.FC<SettingsProps> = ({
 
   const handleRequestPermission = async () => {
     setIsRequestingPermission(true);
-    setTestNotificationFeedback(null);
     try {
       const result = await requestNotificationPermission();
       setPermissionState(result);
@@ -180,27 +173,6 @@ export const Settings: React.FC<SettingsProps> = ({
     }
   };
 
-  const handleSendTestNotification = async () => {
-    setIsSendingTest(true);
-    setTestNotificationFeedback(null);
-    try {
-      const result = await sendTestNotification();
-      setPermissionState(result.permission);
-      if (result.success) {
-        setTestNotificationFeedback({
-          type: 'success',
-          message: result.message,
-        });
-      } else {
-        setTestNotificationFeedback({
-          type: result.permission === 'denied' ? 'error' : 'warning',
-          message: result.message,
-        });
-      }
-    } finally {
-      setIsSendingTest(false);
-    }
-  };
 
   const applySettingChange = async (newSettings: UserSettings, message?: string) => {
     setIsSaving(true);
@@ -693,39 +665,6 @@ export const Settings: React.FC<SettingsProps> = ({
           )}
         </div>
 
-        {/* ── Dev / QA: Test Notification ── */}
-        <div className="notif-test-section">
-          <div className="notif-test-header">
-            <span className="notif-test-label">🧪 Send Test Notification</span>
-            <span className="notif-test-sub">Development · Does not affect real class reminders</span>
-          </div>
-
-          <button
-            id="btn-send-test-notification"
-            type="button"
-            className="btn btn-secondary btn-sm"
-            style={{ marginTop: '0.6rem' }}
-            onClick={handleSendTestNotification}
-            disabled={isSendingTest}
-          >
-            <BellIcon size={14} />
-            <span>{isSendingTest ? 'Sending…' : 'Send Test Notification'}</span>
-          </button>
-
-          {testNotificationFeedback && (
-            <div
-              className={`notif-test-feedback ${
-                testNotificationFeedback.type === 'success'
-                  ? 'notif-notice-success'
-                  : testNotificationFeedback.type === 'error'
-                  ? 'notif-notice-error'
-                  : 'notif-notice-info'
-              }`}
-            >
-              {testNotificationFeedback.message}
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Data Management & Timetable Reset Card */}
@@ -757,14 +696,13 @@ export const Settings: React.FC<SettingsProps> = ({
           <div className="creator-title">
             <span>Disha Maurya</span>
           </div>
-          <span className="creator-badge">CSE-15</span>
         </div>
         <p className="creator-message">
           <em>Built to make college timetables simpler, clearer, and less stressful.</em>
         </p>
         <div className="creator-footer">
-          <span>ClassMate · CSE-15 Edition</span>
-          <span>Fast · Offline-ready · Private</span>
+          <span>ClassMate · Your College Timetable</span>
+          <span>Your schedule, made simpler</span>
         </div>
       </div>
     </div>
