@@ -1088,23 +1088,159 @@ body {
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
 }
 
-/* Desktop Grid View */
-.desktop-grid-view {
-  display: none;
+/* ==========================================================================
+   WEEKLY TIMETABLE VIEW SWITCHER & MATRIX LAYOUT
+   ========================================================================== */
+
+/* Mobile View Switcher (Day Schedule vs Weekly Matrix) */
+.mobile-view-switcher {
+  display: flex;
+  margin-bottom: 0.35rem;
 }
 
-@media (min-width: 960px) {
-  .desktop-grid-view {
+.switcher-pill-group {
+  display: inline-flex;
+  background: var(--bg-card);
+  padding: 0.25rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  gap: 0.25rem;
+  box-shadow: var(--shadow-xs);
+  width: 100%;
+  max-width: 380px;
+}
+
+.switcher-pill-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.48rem 0.95rem;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.switcher-pill-btn:hover {
+  color: var(--text-primary);
+}
+
+.switcher-pill-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+}
+
+/* Responsive View Display Controls */
+@media (max-width: 959px) {
+  .mobile-view-switcher {
+    display: flex;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .timetable-matrix-view {
     display: block;
     background: var(--bg-card);
     border-radius: var(--radius-xl);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
-    overflow-x: auto;
+    padding: 1.15rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .mobile-view-switcher {
+    display: none !important;
+  }
+
+  .timetable-day-view {
+    display: block !important;
+  }
+
+  .timetable-matrix-view,
+  .desktop-grid-view {
+    display: block !important;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
     padding: 1.5rem;
   }
 }
 
+/* Matrix Header & Scroll Hint */
+.matrix-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.matrix-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.matrix-scroll-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (min-width: 960px) {
+  .matrix-scroll-hint {
+    display: none;
+  }
+}
+
+/* Matrix Scroll Container (Horizontal touch scrolling container) */
+.matrix-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+}
+
+.matrix-table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.matrix-table-container::-webkit-scrollbar-track {
+  background: var(--bg-card-subtle);
+  border-radius: var(--radius-full);
+}
+
+.matrix-table-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+.matrix-table-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Timetable Table Matrix */
 .timetable-table {
   width: 100%;
   border-collapse: separate;
@@ -1121,6 +1257,19 @@ body {
   border-radius: var(--radius-sm);
   text-align: center;
   border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+/* Sticky first column (Day header) */
+.timetable-table th.sticky-day-header,
+.timetable-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background-color: var(--bg-card);
+  background-image: linear-gradient(var(--bg-card-subtle), var(--bg-card-subtle));
+  border-right: 2px solid var(--border-color);
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.08);
 }
 
 .timetable-table td {
@@ -1133,15 +1282,23 @@ body {
   min-height: 80px;
 }
 
+/* Sticky first column (Day cell) */
 .timetable-table td.day-col {
-  background: var(--primary-light);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: var(--bg-card);
+  background-image: linear-gradient(var(--primary-light), var(--primary-light));
   color: var(--primary);
   font-weight: 800;
   text-align: center;
   vertical-align: middle;
   width: 95px;
+  min-width: 95px;
   font-size: 0.88rem;
   border-color: var(--primary-border);
+  border-right: 2px solid var(--primary-border);
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.08);
 }
 
 .timetable-table td.lunch-col {
