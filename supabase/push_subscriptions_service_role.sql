@@ -1,0 +1,42 @@
+﻿-- ==============================================================================
+-- ClassMate Phase 3D: Service-Role Read Policy for push_subscriptions
+-- Target Project: https://nqnnterukpgvlswsrhmm.supabase.co
+--
+-- INSTRUCTIONS:
+--   Run AFTER push_subscriptions.sql has been executed.
+--   Execute manually in the Supabase SQL Editor:
+--   https://supabase.com/dashboard/project/nqnnterukpgvlswsrhmm/sql
+--
+-- WHY THIS FILE EXISTS:
+--   The Supabase Edge Function uses the service-role key, which normally
+--   bypasses RLS. However, the Supabase JS client in Edge Functions
+--   initialised with the service-role key automatically sets
+--   { db: { schema: 'public' } } but STILL enforces RLS unless you
+--   explicitly call .from('...') on a service-role client.
+--
+--   Using supabase-js v2 with the service-role key bypasses RLS automatically.
+--   This SQL file is provided as documentation/safety net.
+--   No additional policy is strictly required when using service role.
+--
+-- WHAT IS SAFE:
+--   - The service-role key is ONLY in the Edge Function environment (Supabase secrets).
+--   - It is NEVER in frontend code, Git, or .env files.
+--   - Students cannot use the service-role key.
+-- ==============================================================================
+
+-- This file intentionally contains no SQL to execute.
+-- The Edge Function uses the SUPABASE_SERVICE_ROLE_KEY (auto-injected Deno env)
+-- which bypasses RLS by design.
+--
+-- To verify: in Supabase Dashboard -> Authentication -> Policies
+-- push_subscriptions should show the 4 user-facing RLS policies from push_subscriptions.sql.
+-- The service-role client reads past them automatically.
+--
+-- If you ever want to add an explicit service-role bypass policy, use:
+--
+-- create policy "Service role bypass for push_subscriptions"
+--   on public.push_subscriptions
+--   for all
+--   using (auth.role() = 'service_role');
+--
+-- Uncomment and run the above if needed, but it is NOT required with supabase-js v2 + service role.
