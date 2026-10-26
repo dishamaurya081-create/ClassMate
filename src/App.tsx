@@ -17,16 +17,27 @@ import { AuthScreen } from './components/AuthScreen';
 import { OnboardingScreen } from './components/OnboardingScreen';
 import { NotificationPromptCard } from './components/NotificationPromptCard';
 import { ComingSoonView } from './components/ComingSoonView';
+import { OfficialCalendar } from './components/OfficialCalendar';
+import { AdminCalendar } from './components/AdminCalendar';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
+import { useCreatorAuth } from './hooks/useCreatorAuth';
+import { calendarService } from './services/calendarService';
+import type { OfficialEvent, ClassSuspension } from './types/calendar';
+import {
+  getDateStringIST,
+  evaluateClassCancellation,
+  doesScopeApply,
+} from './types/calendar';
 import { AuthCallbackScreen } from './components/AuthCallbackScreen';
 import { isAuthCallbackUrl } from './utils/authCallback';
-import { PlusIcon, ClockIcon, GraduationCapIcon } from './components/Icons';
+import { PlusIcon, ClockIcon, GraduationCapIcon, AlertTriangleIcon, CalendarDaysIcon } from './components/Icons';
 import './services/browserNotificationDelivery';
 import './styles/index.css';
 
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
+  const { isAdmin, isPrimaryAdmin } = useCreatorAuth(user?.id, user?.email);
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
@@ -39,6 +50,10 @@ const AppContent: React.FC = () => {
   const [settings, setSettings] = useState<UserSettings>(() => settingsStorage.getSettings(user?.id));
   const [syncedUserId, setSyncedUserId] = useState<string | null>(null);
   const isProfileLoading = Boolean(user && syncedUserId !== user.id);
+
+  // Today's events and suspensions for cancellation & banner integration
+  const [todayEvents, setTodayEvents] = useState<OfficialEvent[]>([]);
+  const [todaySuspensions, setTodaySuspensions] = useState<ClassSuspension[]>([]);
 
   // Real clock state
   const [realTime, setRealTime] = useState<Date>(new Date());
@@ -127,15 +142,108 @@ const AppContent: React.FC = () => {
     return d;
   }, [realTime, simulatedTimeOffset]);
 
+  // Today's date string in IST (Asia/Kolkata)
+  const todayDateStr = useMemo(() => getDateStringIST(effectiveTime), [effectiveTime]);
+
+  // Fetch today's official events and suspensions
+  useEffect(() => {
+    if (!user) return;
+    calendarService
+      .fetchOfficialEvents(todayDateStr, todayDateStr)
+      .then(setTodayEvents)
+      .catch((err) => console.warn('Failed to load today events:', err));
+
+    calendarService
+      .fetchClassSuspensions(todayDateStr, todayDateStr)
+      .then(setTodaySuspensions)
+      .catch((err) => console.warn('Failed to load today suspensions:', err));
+  }, [user, todayDateStr]);
+
+  // User scope for event/suspension filtering
+  const userScope = useMemo(
+    () => ({
+      section: settings.section,
+      specializationOption: settings.specializationOption,
+      groupOption: settings.groupOption,
+    }),
+    [settings.section, settings.specializationOption, settings.groupOption]
+  );
+
   // Filtered classes personalized to user's Section, DV/Cloud, and Group
   const userFilteredClasses = useMemo(() => {
     return classes.filter((c) => isClassForUser(c, settings));
   }, [classes, settings]);
 
-  // Schedule analysis based on filtered classes and effective time
+  // Full day schedule analysis (includes all scheduled timetable classes)
   const scheduleAnalysis = useMemo(() => {
     return analyzeDaySchedule(userFilteredClasses, effectiveTime);
   }, [userFilteredClasses, effectiveTime]);
+
+  // Cancellations map for today's classes
+  const cancellationsMap = useMemo(() => {
+    const map: Record<string, { isCancelled: boolean; reason?: string }> = {};
+    for (const c of userFilteredClasses) {
+      const res = evaluateClassCancellation(
+        c,
+        todayDateStr,
+        todayEvents,
+        todaySuspensions,
+        userScope
+      );
+      if (res.isCancelled) {
+        map[c.id] = { isCancelled: true, reason: res.reason };
+      }
+    }
+    return map;
+  }, [userFilteredClasses, todayDateStr, todayEvents, todaySuspensions, userScope]);
+
+  // Active (non-cancelled) classes for today used to evaluate upcoming classes
+  const nonCancelledUserClasses = useMemo(() => {
+    return userFilteredClasses.filter((c) => !cancellationsMap[c.id]?.isCancelled);
+  }, [userFilteredClasses, cancellationsMap]);
+
+  // NextClassCard schedule analysis based exclusively on non-cancelled classes
+  const activeScheduleAnalysis = useMemo(() => {
+    return analyzeDaySchedule(nonCancelledUserClasses, effectiveTime);
+  }, [nonCancelledUserClasses, effectiveTime]);
+
+  // Active notice (holiday or suspension) for prominent dashboard banner
+  const activeNotice = useMemo(() => {
+    // Check suspension first
+    const activeSusp = todaySuspensions.find(
+      (s) => s.published && doesScopeApply(s, {} as ClassItem, userScope)
+    );
+    if (activeSusp) {
+      let detail = activeSusp.description || undefined;
+      if (activeSusp.suspensionType === 'after_cutoff' && activeSusp.cutoffTime) {
+        detail = `Classes starting from ${activeSusp.cutoffTime} onwards are cancelled. ${detail || ''}`.trim();
+      } else if (activeSusp.suspensionType === 'period' && activeSusp.cutoffTime && activeSusp.periodEndTime) {
+        detail = `Classes between ${activeSusp.cutoffTime} and ${activeSusp.periodEndTime} are suspended. ${detail || ''}`.trim();
+      }
+      return {
+        title: activeSusp.title,
+        type: 'suspension' as const,
+        detail,
+      };
+    }
+
+    // Check holiday
+    const holiday = todayEvents.find(
+      (e) =>
+        e.eventType === 'holiday' &&
+        e.cancelsClasses &&
+        doesScopeApply(e, {} as ClassItem, userScope)
+    );
+    if (holiday) {
+      return {
+        title: holiday.title,
+        type: 'holiday' as const,
+        detail: holiday.description || 'All regular classes are suspended today.',
+      };
+    }
+
+    return null;
+  }, [todaySuspensions, todayEvents, userScope]);
 
   // 0. Dedicated Auth Callback Screen (Email confirmation redirect, PKCE, or error)
   if (isHandlingCallback) {
@@ -273,6 +381,8 @@ const AppContent: React.FC = () => {
         onTabChange={setActiveTab}
         userEmail={user.email}
         section={settings.section}
+        isAdmin={isAdmin}
+        isPrimaryAdmin={isPrimaryAdmin}
       />
 
       {/* Main App Content */}
@@ -312,12 +422,37 @@ const AppContent: React.FC = () => {
               />
             ) : (
               <>
+                {/* Active Holiday or Suspension Banner on Dashboard */}
+                {activeNotice && (
+                  <div
+                    className={`dashboard-notice-banner ${activeNotice.type === 'holiday' ? 'banner-holiday' : 'banner-suspension'}`}
+                  >
+                    <div className="banner-icon-col">
+                      {activeNotice.type === 'holiday' ? (
+                        <CalendarDaysIcon size={22} />
+                      ) : (
+                        <AlertTriangleIcon size={22} />
+                      )}
+                    </div>
+                    <div className="banner-content-col">
+                      <div className="banner-title">
+                        {activeNotice.type === 'holiday' ? 'Official Holiday' : 'Class Suspension Notice'}:{' '}
+                        {activeNotice.title}
+                      </div>
+                      {activeNotice.detail && (
+                        <div className="banner-detail">{activeNotice.detail}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <NextClassCard
-                  currentClass={scheduleAnalysis.currentClass}
-                  nextClass={scheduleAnalysis.nextClass}
-                  hasClassesToday={scheduleAnalysis.hasClassesToday}
-                  allCompleted={scheduleAnalysis.allCompleted}
-                  dayName={scheduleAnalysis.dayName}
+                  currentClass={activeScheduleAnalysis.currentClass}
+                  nextClass={activeScheduleAnalysis.nextClass}
+                  hasClassesToday={activeScheduleAnalysis.hasClassesToday}
+                  allCompleted={activeScheduleAnalysis.allCompleted}
+                  dayName={activeScheduleAnalysis.dayName}
+                  notice={activeNotice}
                 />
 
                 <TodaySchedule
@@ -325,6 +460,7 @@ const AppContent: React.FC = () => {
                   dayName={scheduleAnalysis.dayName}
                   onEditClass={handleOpenEditClass}
                   onDeleteClass={handleOpenDeleteClass}
+                  cancellationsMap={cancellationsMap}
                 />
               </>
             )}
@@ -344,6 +480,21 @@ const AppContent: React.FC = () => {
           />
         )}
 
+        {/* Student Academic Calendar Tab */}
+        {activeTab === 'calendar' && (
+          <OfficialCalendar effectiveTime={effectiveTime} />
+        )}
+
+        {/* Dedicated Admin Calendar Tab (Administrators only) */}
+        {activeTab === 'admin-calendar' && isAdmin && (
+          <AdminCalendar
+            userId={user.id}
+            userEmail={user.email}
+            isPrimaryAdmin={isPrimaryAdmin}
+            effectiveTime={effectiveTime}
+          />
+        )}
+
         {/* Settings Tab */}
         {activeTab === 'settings' && (
           <Settings
@@ -355,8 +506,8 @@ const AppContent: React.FC = () => {
           />
         )}
 
-        {/* Floating Action Button (FAB) for Quick Add Class (available sections only) */}
-        {isSectionAvailable(settings.section, OFFICIAL_TIMETABLE_DATA) && (
+        {/* Floating Action Button (FAB) for Quick Add Class (Weekly Timetable tab only) */}
+        {activeTab === 'timetable' && isSectionAvailable(settings.section, OFFICIAL_TIMETABLE_DATA) && (
           <button
             type="button"
             className="fab-btn"
