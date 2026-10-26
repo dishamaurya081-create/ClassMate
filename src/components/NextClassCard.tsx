@@ -10,6 +10,11 @@ interface NextClassCardProps {
   hasClassesToday: boolean;
   allCompleted: boolean;
   dayName: string;
+  notice?: {
+    title: string;
+    type: 'holiday' | 'suspension';
+    detail?: string;
+  } | null;
 }
 
 export const NextClassCard: React.FC<NextClassCardProps> = ({
@@ -18,9 +23,32 @@ export const NextClassCard: React.FC<NextClassCardProps> = ({
   hasClassesToday,
   allCompleted,
   dayName,
+  notice,
 }) => {
-  // Case 1: Weekend or day with no classes scheduled
+  // Case 1: Weekend or day with no classes scheduled (or full day holiday/suspension)
   if (!hasClassesToday) {
+    if (notice) {
+      const isHoliday = notice.type === 'holiday';
+      return (
+        <section className="next-class-container" aria-label="Official Notice">
+          <div
+            className="hero-card is-empty"
+            style={{
+              borderTop: isHoliday ? '4px solid var(--accent-rose)' : '4px solid var(--accent-amber)',
+            }}
+          >
+            <div className="empty-state-icon">{isHoliday ? '🏖️' : '⚠️'}</div>
+            <h2 className="hero-subject-name" style={{ fontSize: '1.25rem', marginBottom: '0.35rem' }}>
+              {isHoliday ? 'Official Holiday' : 'Classes Suspended'}: {notice.title}
+            </h2>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+              {notice.detail || (isHoliday ? 'All regular classes are suspended today.' : 'Classes are suspended today.')}
+            </p>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className="next-class-container" aria-label="Current and Next Class Status">
         <div className="hero-card is-empty">
