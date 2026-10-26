@@ -72,3 +72,35 @@ export interface NotificationDeliveryRow {
   created_at: string;
 }
 
+/** Row from public.official_events */
+export interface OfficialEventRow {
+  id: string;
+  title: string;
+  event_type: string;
+  start_date: string;
+  end_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  cancels_classes: boolean;
+  published: boolean;
+  affected_section: string | null;
+  affected_batch: string | null;
+  affected_group: string | null;
+}
+
+/** Row from public.class_suspensions */
+export interface ClassSuspensionRow {
+  id: string;
+  title: string;
+  start_date: string;
+  end_date: string | null;
+  suspension_type: string;
+  cutoff_time: string | null;
+  period_end_time: string | null;
+  published: boolean;
+  affected_section: string | null;
+  affected_batch: string | null;
+  affected_group: string | null;
+}
+
+

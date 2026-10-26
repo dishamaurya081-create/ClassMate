@@ -53,12 +53,15 @@ import {
 } from "./notificationTiming.ts";
 import { filterClassesForUser } from "./timetableFilter.ts";
 import { sendWebPush } from "./webPushSender.ts";
+import { isClassCancelled } from "./cancellationEvaluator.ts";
 import type {
   ProfileRow,
   ClassRow,
   PushSubscriptionRow,
   UserProcessingResult,
   NotificationDeliveryRow,
+  OfficialEventRow,
+  ClassSuspensionRow,
 } from "./types.ts";
 
 // ---------------------------------------------------------------------------
@@ -220,6 +223,27 @@ Deno.serve(async (req: Request) => {
   }
 
   // ---------------------------------------------------------------------------
+  // 2b. Fetch today's active published official events & class suspensions
+  // ---------------------------------------------------------------------------
+  const [eventsResult, suspensionsResult] = await Promise.all([
+    supabase
+      .from("official_events")
+      .select("id, title, event_type, start_date, end_date, start_time, end_time, cancels_classes, published, affected_section, affected_batch, affected_group")
+      .eq("published", true)
+      .lte("start_date", todayDate)
+      .or(`end_date.gte.${todayDate},and(end_date.is.null,start_date.gte.${todayDate})`),
+    supabase
+      .from("class_suspensions")
+      .select("id, title, start_date, end_date, suspension_type, cutoff_time, period_end_time, published, affected_section, affected_batch, affected_group")
+      .eq("published", true)
+      .lte("start_date", todayDate)
+      .or(`end_date.gte.${todayDate},and(end_date.is.null,start_date.gte.${todayDate})`),
+  ]);
+
+  const activeEvents = (eventsResult.data ?? []) as OfficialEventRow[];
+  const activeSuspensions = (suspensionsResult.data ?? []) as ClassSuspensionRow[];
+
+  // ---------------------------------------------------------------------------
   // 3. Process each student profile
   // ---------------------------------------------------------------------------
   const results: UserProcessingResult[] = [];
@@ -236,10 +260,28 @@ Deno.serve(async (req: Request) => {
 
     try {
       // a. Filter classes for this student (section + DV batch + group)
-      const studentClasses = filterClassesForUser(todayClasses, {
+      const baseStudentClasses = filterClassesForUser(todayClasses, {
         section: profile.section,
         specialization_option: profile.specialization_option,
         student_group: profile.student_group,
+      });
+
+      // Filter out any classes cancelled by an official holiday, cutoff suspension, or event
+      const studentClasses = baseStudentClasses.filter((cls) => {
+        const cancellation = isClassCancelled(
+          cls,
+          todayDate,
+          profile,
+          activeEvents,
+          activeSuspensions
+        );
+        if (cancellation.isCancelled) {
+          console.log(
+            `[send-push-notification] Suppressed reminder for ${cls.subject} (${cls.start_time}) for user ${profile.id} — Cancelled by ${cancellation.reason}`
+          );
+          return false;
+        }
+        return true;
       });
 
       if (studentClasses.length === 0) {
