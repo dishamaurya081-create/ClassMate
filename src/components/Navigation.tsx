@@ -1,19 +1,30 @@
 import React from 'react';
-import { HomeIcon, CalendarIcon, SettingsIcon, GraduationCapIcon } from './Icons';
+import {
+  HomeIcon,
+  CalendarIcon,
+  CalendarDaysIcon,
+  SettingsIcon,
+  GraduationCapIcon,
+  ShieldCheckIcon,
+} from './Icons';
 
-export type ActiveTab = 'home' | 'timetable' | 'settings';
+export type ActiveTab = 'home' | 'timetable' | 'calendar' | 'admin-calendar' | 'settings';
 
 interface NavigationProps {
   activeTab: ActiveTab;
   onTabChange: (tab: ActiveTab) => void;
   userEmail?: string | null;
   section?: string;
+  isAdmin?: boolean;
+  isPrimaryAdmin?: boolean;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   activeTab,
   onTabChange,
   section = 'CSE-15',
+  isAdmin = false,
+  isPrimaryAdmin = false,
 }) => {
   return (
     <>
@@ -38,6 +49,28 @@ export const Navigation: React.FC<NavigationProps> = ({
           <CalendarIcon size={20} />
           <span>Timetable</span>
         </button>
+
+        <button
+          type="button"
+          className={`bottom-nav-item ${activeTab === 'calendar' ? 'active' : ''}`}
+          onClick={() => onTabChange('calendar')}
+          aria-label="Go to Academic Calendar"
+        >
+          <CalendarDaysIcon size={20} />
+          <span>Calendar</span>
+        </button>
+
+        {isAdmin && (
+          <button
+            type="button"
+            className={`bottom-nav-item ${activeTab === 'admin-calendar' ? 'active' : ''}`}
+            onClick={() => onTabChange('admin-calendar')}
+            aria-label="Go to Admin Calendar"
+          >
+            <ShieldCheckIcon size={20} />
+            <span>Admin</span>
+          </button>
+        )}
 
         <button
           type="button"
@@ -85,6 +118,33 @@ export const Navigation: React.FC<NavigationProps> = ({
               <span>Weekly Timetable</span>
             </button>
           </li>
+          <li>
+            <button
+              type="button"
+              className={`sidebar-nav-btn ${activeTab === 'calendar' ? 'active' : ''}`}
+              onClick={() => onTabChange('calendar')}
+            >
+              <CalendarDaysIcon size={18} />
+              <span>Academic Calendar</span>
+            </button>
+          </li>
+
+          {isAdmin && (
+            <li>
+              <button
+                type="button"
+                className={`sidebar-nav-btn admin-nav-btn ${activeTab === 'admin-calendar' ? 'active' : ''}`}
+                onClick={() => onTabChange('admin-calendar')}
+              >
+                <ShieldCheckIcon size={18} />
+                <span>Admin Calendar</span>
+                <span className={`sidebar-role-badge ${isPrimaryAdmin ? 'primary' : 'admin'}`}>
+                  {isPrimaryAdmin ? 'Primary' : 'Admin'}
+                </span>
+              </button>
+            </li>
+          )}
+
           <li>
             <button
               type="button"
