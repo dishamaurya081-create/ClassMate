@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import type { ClassItem, DayOfWeek, UserSettings, SpecializationOption, GroupOption } from './types/timetable';
 import { isSectionAvailable, isClassForUser, isProfileComplete } from './types/timetable';
 import { OFFICIAL_TIMETABLE_DATA } from './data/timetable';
@@ -19,9 +19,12 @@ import { NotificationPromptCard } from './components/NotificationPromptCard';
 import { ComingSoonView } from './components/ComingSoonView';
 import { OfficialCalendar } from './components/OfficialCalendar';
 import { AdminCalendar } from './components/AdminCalendar';
+import { InstallBanner } from './components/InstallBanner';
+import { InstallGuideModal } from './components/InstallGuideModal';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
 import { useCreatorAuth } from './hooks/useCreatorAuth';
+import { usePWAInstall } from './hooks/usePWAInstall';
 import { calendarService } from './services/calendarService';
 import type { OfficialEvent, ClassSuspension } from './types/calendar';
 import {
@@ -38,6 +41,13 @@ import './styles/index.css';
 const AppContent: React.FC = () => {
   const { user, isLoading } = useAuth();
   const { isAdmin, isPrimaryAdmin } = useCreatorAuth(user?.id, user?.email);
+  const pwa = usePWAInstall();
+  const [isInstallingFromBanner, setIsInstallingFromBanner] = useState(false);
+
+  // Stable callback for Settings install button (must not be inside conditional JSX)
+  const handlePWAInstallFromSettings = useCallback(async () => {
+    await pwa.installApp();
+  }, [pwa]);
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
@@ -446,6 +456,21 @@ const AppContent: React.FC = () => {
                   </div>
                 )}
 
+                {/* Install Banner — shown on home when app not installed and banner not dismissed */}
+                {!pwa.isInstalled && !pwa.isBannerDismissed && (pwa.canPromptNative || pwa.isIOS) && (
+                  <InstallBanner
+                    isIOS={pwa.isIOS}
+                    canPromptNative={pwa.canPromptNative}
+                    isInstalling={isInstallingFromBanner}
+                    onInstall={async () => {
+                      setIsInstallingFromBanner(true);
+                      await pwa.installApp();
+                      setIsInstallingFromBanner(false);
+                    }}
+                    onDismiss={pwa.dismissBanner}
+                  />
+                )}
+
                 <NextClassCard
                   currentClass={activeScheduleAnalysis.currentClass}
                   nextClass={activeScheduleAnalysis.nextClass}
@@ -503,6 +528,12 @@ const AppContent: React.FC = () => {
             onResetTimetable={handleResetTimetable}
             classes={classes}
             currentTime={effectiveTime}
+            pwaIsInstalled={pwa.isInstalled}
+            pwaCanPromptNative={pwa.canPromptNative}
+            pwaIsIOS={pwa.isIOS}
+            pwaPlatform={pwa.platform}
+            pwaOnInstall={handlePWAInstallFromSettings}
+            pwaOnOpenGuide={pwa.openInstallGuide}
           />
         )}
 
@@ -536,6 +567,15 @@ const AppContent: React.FC = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
       />
+
+      {/* PWA Install Guide Modal */}
+      {pwa.isGuideOpen && (
+        <InstallGuideModal
+          platform={pwa.platform}
+          isIOS={pwa.isIOS}
+          onClose={pwa.closeInstallGuide}
+        />
+      )}
     </div>
   );
 };

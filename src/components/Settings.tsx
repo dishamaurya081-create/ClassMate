@@ -21,6 +21,7 @@ import {
 } from '../services/pushSubscriptionService';
 import type { PushSubscriptionStatus } from '../types/webPush';
 import { useAuth } from '../context/useAuth';
+import type { PWAInstallPlatform } from '../types/pwa';
 import {
   UserIcon,
   BellIcon,
@@ -36,6 +37,13 @@ interface SettingsProps {
   onResetTimetable: () => void;
   classes?: ClassItem[];
   currentTime?: Date;
+  // PWA install props (injected by App.tsx)
+  pwaIsInstalled?: boolean;
+  pwaCanPromptNative?: boolean;
+  pwaIsIOS?: boolean;
+  pwaPlatform?: PWAInstallPlatform;
+  pwaOnInstall?: () => void;
+  pwaOnOpenGuide?: () => void;
 }
 
 // Small helper: renders the coloured pill that shows browser permission status
@@ -78,6 +86,12 @@ export const Settings: React.FC<SettingsProps> = ({
   onResetTimetable,
   classes = [],
   currentTime,
+  pwaIsInstalled = false,
+  pwaCanPromptNative = false,
+  pwaIsIOS = false,
+  pwaPlatform = 'other',
+  pwaOnInstall,
+  pwaOnOpenGuide,
 }) => {
   const { user, signOut } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
@@ -665,6 +679,118 @@ export const Settings: React.FC<SettingsProps> = ({
           )}
         </div>
 
+      </div>
+
+      {/* ── Install App Card ── */}
+      <div className="settings-card">
+        <h3 className="settings-card-title">
+          {/* Download / install icon */}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Install App</span>
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+          Add ClassMate to your home screen for quicker access — no browser bar, just the app.
+        </p>
+
+        {pwaIsInstalled ? (
+          <div className="notif-permission-notice notif-notice-success">
+            ✅ ClassMate is already installed on this device. Open it from your home screen or app drawer for the full experience.
+          </div>
+        ) : (
+          <>
+            {/* Native install prompt available (Android / desktop Chrome / Edge) */}
+            {pwaCanPromptNative && (
+              <>
+                <div className="notif-permission-notice notif-notice-info" style={{ marginBottom: '0.75rem' }}>
+                  📲 Your browser supports one-click installation. Tap the button below to install ClassMate on this device.
+                </div>
+                <button
+                  id="btn-settings-install-app"
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={pwaOnInstall}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  <span>Install ClassMate</span>
+                </button>
+              </>
+            )}
+
+            {/* iOS Safari — no native prompt */}
+            {pwaIsIOS && !pwaCanPromptNative && (
+              <>
+                <div className="notif-permission-notice notif-notice-info" style={{ marginBottom: '0.75rem' }}>
+                  📱 On iPhone or iPad, use Safari's Share button and select <strong>&quot;Add to Home Screen&quot;</strong> to install ClassMate.
+                </div>
+                <button
+                  id="btn-settings-install-ios-guide"
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={pwaOnOpenGuide}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <span>View Installation Guide</span>
+                </button>
+              </>
+            )}
+
+            {/* Desktop / other browser without native prompt */}
+            {!pwaIsIOS && !pwaCanPromptNative && (pwaPlatform === 'desktop' || pwaPlatform === 'other') && (
+              <>
+                <div className="notif-permission-notice notif-notice-muted" style={{ marginBottom: '0.75rem' }}>
+                  💻 To install ClassMate, use the install icon in your browser's address bar (Chrome or Edge), or open the browser menu and select <strong>&quot;Install app&quot;</strong>.
+                </div>
+                <button
+                  id="btn-settings-install-desktop-guide"
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={pwaOnOpenGuide}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <span>Installation Instructions</span>
+                </button>
+              </>
+            )}
+
+            {/* Android without native prompt shown yet */}
+            {!pwaIsIOS && !pwaCanPromptNative && pwaPlatform === 'android' && (
+              <>
+                <div className="notif-permission-notice notif-notice-info" style={{ marginBottom: '0.75rem' }}>
+                  📲 On Android, the install prompt will appear automatically after you use ClassMate for a moment. You can also tap the browser menu (⋮) and choose <strong>&quot;Add to Home Screen&quot;</strong>.
+                </div>
+                <button
+                  id="btn-settings-install-android-guide"
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={pwaOnOpenGuide}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <span>Installation Instructions</span>
+                </button>
+              </>
+            )}
+          </>
+        )}
       </div>
 
       {/* Data Management & Timetable Reset Card */}
