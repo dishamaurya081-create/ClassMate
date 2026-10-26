@@ -6,6 +6,8 @@ import type {
   NotificationEvaluationResult,
   NotificationDeliveryHandler,
 } from '../types/notification';
+import type { OfficialEvent, ClassSuspension } from '../types/calendar';
+import { getDateStringIST, evaluateClassCancellation } from '../types/calendar';
 
 const SENT_NOTIFICATIONS_STORAGE_KEY = 'classmate_sent_notifications';
 
@@ -173,7 +175,9 @@ class NotificationService {
   public evaluateNextNotification(
     allClasses: ClassItem[],
     settings: UserSettings,
-    referenceDate: Date = new Date()
+    referenceDate: Date = new Date(),
+    activeEvents: OfficialEvent[] = [],
+    activeSuspensions: ClassSuspension[] = []
   ): NotificationEvaluationResult {
     // 1. Check if user has notifications disabled
     if (!settings.remindersEnabled) {
@@ -191,19 +195,43 @@ class NotificationService {
     // 2. Filter classes using user's Section, DV Batch, and Group
     const userFilteredClasses = allClasses.filter((c) => isClassForUser(c, settings));
 
-    // 3. Analyze schedule for today
+    // 3. Filter out classes cancelled by active official events (holidays, exams) or class suspensions
+    const todayDateStr = getDateStringIST(referenceDate);
+    const scope = {
+      section: settings.section,
+      specializationOption: settings.specializationOption,
+      groupOption: settings.groupOption,
+    };
+
+    const activeClasses = userFilteredClasses.filter((c) => {
+      const cancellation = evaluateClassCancellation(
+        c,
+        todayDateStr,
+        activeEvents,
+        activeSuspensions,
+        scope
+      );
+      return !cancellation.isCancelled;
+    });
+
+    // 4. Analyze schedule for today using active (non-cancelled) classes
     const { currentClass, nextClass, hasClassesToday, allCompleted } = analyzeDaySchedule(
-      userFilteredClasses,
+      activeClasses,
       referenceDate
     );
 
-    // Case: No classes scheduled today
+    // Case: No classes scheduled today (or all regular classes cancelled by holiday/suspension)
     if (!hasClassesToday) {
+      const hadOriginalClasses = analyzeDaySchedule(userFilteredClasses, referenceDate).hasClassesToday;
+      const cancellationMsg = hadOriginalClasses
+        ? 'Classes today are cancelled due to an official holiday or suspension. Reminders are paused.'
+        : 'No classes scheduled for today.';
+
       return {
         shouldNotify: false,
         reason: 'no_classes_today',
         notification: null,
-        message: 'No classes scheduled for today.',
+        message: cancellationMsg,
         currentClass: null,
         nextClass: null,
         evaluatedAt: referenceDate,
@@ -291,15 +319,22 @@ class NotificationService {
   public async dispatchIfDue(
     allClasses: ClassItem[],
     settings: UserSettings,
-    referenceDate: Date = new Date()
+    referenceDate: Date = new Date(),
+    activeEvents: OfficialEvent[] = [],
+    activeSuspensions: ClassSuspension[] = []
   ): Promise<boolean> {
-    const evaluation = this.evaluateNextNotification(allClasses, settings, referenceDate);
+    const evaluation = this.evaluateNextNotification(
+      allClasses,
+      settings,
+      referenceDate,
+      activeEvents,
+      activeSuspensions
+    );
     if (!evaluation.shouldNotify || !evaluation.notification) {
       return false;
     }
 
     if (!this.deliveryHandler) {
-      // In Phase 3 foundation: delivery handler is not yet attached
       return false;
     }
 

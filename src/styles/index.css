@@ -2627,3 +2627,1247 @@ input:checked + .toggle-slider:before {
     transform: rotate(360deg);
   }
 }
+
+/* ==========================================================================
+   OFFICIAL ACADEMIC CALENDAR & CLASS SUSPENSION STYLES
+   ========================================================================== */
+
+/* Dashboard Notice Banner (Holidays / Suspensions) */
+.dashboard-notice-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.dashboard-notice-banner.banner-holiday {
+  background: var(--accent-rose-light);
+  border: 1px solid var(--accent-rose-border);
+  color: var(--text-rose);
+}
+
+.dashboard-notice-banner.banner-suspension {
+  background: var(--accent-amber-light);
+  border: 1px solid var(--accent-amber-border);
+  color: var(--text-amber);
+}
+
+.banner-icon-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.banner-content-col {
+  flex: 1;
+}
+
+.banner-title {
+  font-weight: 700;
+  font-size: 0.96rem;
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.01em;
+}
+
+.banner-detail {
+  font-size: 0.84rem;
+  opacity: 0.92;
+  line-height: 1.45;
+}
+
+/* Cancelled Class Card in Today's Schedule */
+.class-card.status-cancelled {
+  border-left: 4px solid var(--accent-rose);
+  opacity: 0.78;
+  background: rgba(239, 68, 68, 0.04);
+}
+
+.class-card.status-cancelled .card-subject-name {
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+.card-status-indicator.cancelled {
+  background: var(--accent-rose-light);
+  color: var(--text-rose);
+  border: 1px solid var(--accent-rose-border);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.class-cancellation-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  background: var(--accent-rose-light);
+  border: 1px solid var(--accent-rose-border);
+  color: var(--text-rose);
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Calendar Page Container */
+.calendar-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Calendar Header Card */
+.calendar-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+}
+
+.calendar-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.calendar-title-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.calendar-page-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.calendar-page-subtitle {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin: 0.2rem 0 0 0;
+}
+
+/* Creator action buttons */
+.calendar-creator-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.btn-calendar-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-calendar-add:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-calendar-suspend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.95rem;
+  background: var(--accent-amber-light);
+  border: 1px solid var(--accent-amber-border);
+  color: var(--text-amber);
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-calendar-suspend:hover {
+  background: rgba(245, 158, 11, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Calendar Toast Notification */
+.calendar-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  position: relative;
+  animation: slideDown 0.25s ease;
+}
+
+.calendar-toast-success {
+  background: var(--accent-emerald-light);
+  border: 1px solid var(--accent-emerald-border);
+  color: var(--text-emerald);
+}
+
+.calendar-toast-error {
+  background: var(--accent-rose-light);
+  border: 1px solid var(--accent-rose-border);
+  color: var(--text-rose);
+}
+
+.toast-close-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.2rem;
+  opacity: 0.8;
+}
+
+.toast-close-btn:hover {
+  opacity: 1;
+}
+
+/* Calendar Error Banner */
+.calendar-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: var(--accent-rose-light);
+  border: 1px solid var(--accent-rose-border);
+  color: var(--text-rose);
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+}
+
+.btn-retry-link {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--text-rose);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Controls Bar (Month Nav + Today) */
+.calendar-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.25rem;
+}
+
+.calendar-month-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cal-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cal-nav-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.cal-month-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  min-width: 170px;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.cal-today-btn {
+  padding: 0.4rem 0.85rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cal-today-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+}
+
+/* Calendar Main Grid (Two-column layout) */
+.calendar-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .calendar-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Calendar Grid Card */
+.calendar-grid-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.calendar-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.calendar-weekday-header {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+/* Calendar Day Cell */
+.calendar-cell {
+  min-height: 84px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.35rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-cell:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+}
+
+.calendar-cell-outside {
+  opacity: 0.38;
+}
+
+.calendar-cell-today {
+  border: 1.5px solid var(--primary);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.calendar-cell-selected {
+  outline: 2px solid var(--primary);
+  background: var(--bg-card-hover);
+}
+
+.calendar-cell-cancelled {
+  border-bottom: 2px solid var(--accent-rose);
+}
+
+.calendar-cell-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.cell-day-num {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.cell-day-num-today {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.76rem;
+}
+
+.cell-mini-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.05rem 0.25rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.pill-holiday {
+  background: var(--accent-rose-light);
+  color: var(--text-rose);
+}
+
+.pill-suspended {
+  background: var(--accent-amber-light);
+  color: var(--text-amber);
+}
+
+.calendar-cell-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.cell-event-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 3px;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.cell-more-badge {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding-left: 2px;
+}
+
+/* Event Badge Colors */
+.cal-badge-holiday {
+  background: var(--accent-rose-light);
+  color: var(--text-rose);
+  border: 1px solid var(--accent-rose-border);
+}
+
+.cal-badge-suspension {
+  background: var(--accent-amber-light);
+  color: var(--text-amber);
+  border: 1px solid var(--accent-amber-border);
+}
+
+.cal-badge-training {
+  background: var(--accent-sky-light);
+  color: var(--text-sky);
+  border: 1px solid var(--accent-sky-border);
+}
+
+.cal-badge-college {
+  background: var(--accent-purple-light);
+  color: var(--text-purple);
+  border: 1px solid var(--accent-purple-border);
+}
+
+.cal-badge-exam {
+  background: rgba(245, 158, 11, 0.18);
+  color: var(--text-amber);
+  border: 1px solid var(--accent-amber-border);
+}
+
+.cal-badge-workshop {
+  background: var(--accent-emerald-light);
+  color: var(--text-emerald);
+  border: 1px solid var(--accent-emerald-border);
+}
+
+.cal-badge-announcement {
+  background: var(--primary-light);
+  color: var(--primary-text);
+  border: 1px solid var(--primary-border);
+}
+
+.cal-badge-other {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Selected Date Details Panel */
+.calendar-details-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+.details-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.85rem;
+}
+
+.details-header-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+}
+
+.details-date-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.details-quick-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-quick-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-text);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-quick-add:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.details-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+}
+
+.details-empty-state h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0.75rem 0 0.35rem 0;
+}
+
+.details-empty-state p {
+  font-size: 0.84rem;
+  max-width: 240px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.empty-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.details-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.details-item-card {
+  padding: 0.95rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  transition: border-color 0.15s ease;
+}
+
+.details-item-card.item-suspension {
+  border-left: 4px solid var(--accent-amber);
+}
+
+.details-item-card.item-holiday {
+  border-left: 4px solid var(--accent-rose);
+}
+
+.details-item-card.item-academic {
+  border-left: 4px solid var(--primary);
+}
+
+.item-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.item-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.item-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-item-action {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.btn-item-action.edit:hover {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.btn-item-action.delete:hover {
+  color: var(--accent-rose);
+  background: var(--accent-rose-light);
+}
+
+.item-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem 0;
+}
+
+.item-description {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0 0 0.5rem 0;
+}
+
+.item-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.item-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.item-scope-tag {
+  background: var(--bg-card-subtle);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.item-cancel-badge {
+  background: var(--accent-rose-light);
+  color: var(--text-rose);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.item-draft-badge {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-muted);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+}
+
+/* Upcoming Events Card */
+.calendar-upcoming-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+}
+
+.upcoming-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.15rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.upcoming-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.upcoming-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0.2rem 0 0 0;
+}
+
+.upcoming-filter-tabs {
+  display: flex;
+  gap: 0.35rem;
+  background: var(--bg-surface);
+  padding: 0.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.filter-tab {
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.upcoming-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+.upcoming-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.upcoming-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.upcoming-card.card-border-rose {
+  border-left: 3px solid var(--accent-rose);
+}
+
+.upcoming-card.card-border-amber {
+  border-left: 3px solid var(--accent-amber);
+}
+
+.upcoming-card.card-border-primary {
+  border-left: 3px solid var(--primary);
+}
+
+.upcoming-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.upcoming-date-badge {
+  font-size: 0.76rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.upcoming-card-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.upcoming-card-sub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.upcoming-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+/* Modal Danger Button */
+.btn-danger {
+  padding: 0.55rem 1.15rem;
+  background: var(--accent-rose);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-danger:hover {
+  background: var(--accent-rose-hover);
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   ADMIN CALENDAR & ADMIN ACCESS MANAGEMENT STYLES
+   ========================================================================== */
+
+/* Admin Calendar Header Card Enhancements */
+.admin-header-card {
+  border-left: 4px solid var(--primary);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(99, 102, 241, 0.05) 100%);
+}
+
+.calendar-title-icon-wrapper.admin-shield-icon {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+  color: var(--primary);
+}
+
+.admin-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-role-badge.primary {
+  background: rgba(168, 85, 247, 0.18);
+  border: 1px solid var(--accent-purple-border);
+  color: var(--text-purple);
+}
+
+.admin-role-badge.standard {
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-text);
+}
+
+/* Sidebar Role Badge */
+.sidebar-role-badge {
+  margin-left: auto;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.sidebar-role-badge.primary {
+  background: var(--accent-purple-light);
+  color: var(--text-purple);
+  border: 1px solid var(--accent-purple-border);
+}
+
+.sidebar-role-badge.admin {
+  background: var(--primary-light);
+  color: var(--primary-text);
+  border: 1px solid var(--primary-border);
+}
+
+/* Admin Subnav Tabs (Calendar & Events vs Admin Access) */
+.admin-subnav-bar {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.4rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  width: fit-content;
+}
+
+.admin-subnav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-subnav-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.admin-subnav-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+}
+
+/* Admin Access Section Container */
+.admin-access-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Admin Info Banner */
+.admin-access-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.15rem 1.35rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-purple);
+  border-radius: var(--radius-lg);
+}
+
+.info-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--accent-purple-light);
+  border: 1px solid var(--accent-purple-border);
+  color: var(--text-purple);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.info-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.info-card-desc {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Grant Admin Form Card */
+.admin-grant-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.5rem;
+}
+
+.card-section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.card-section-subtitle {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+}
+
+.admin-grant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.grant-input-group {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 580px;
+}
+
+@media (max-width: 600px) {
+  .grant-input-group {
+    flex-direction: column;
+  }
+}
+
+.grant-email-input {
+  flex: 1;
+}
+
+.grant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.grant-error-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.84rem;
+  color: var(--text-rose);
+  background: var(--accent-rose-light);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--accent-rose-border);
+  width: fit-content;
+}
+
+/* Authorized Administrators Table Card */
+.admin-list-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.5rem;
+}
+
+.admin-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn-refresh-list {
+  padding: 0.4rem 0.85rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-refresh-list:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.admin-table th {
+  padding: 0.75rem 1rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.admin-email-col {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-email-text {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+}
+
+.root-indicator {
+  font-size: 0.72rem;
+  color: var(--text-purple);
+  font-weight: 600;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.role-badge.primary-role {
+  background: rgba(168, 85, 247, 0.18);
+  border: 1px solid var(--accent-purple-border);
+  color: var(--text-purple);
+}
+
+.role-badge.admin-role {
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-text);
+}
+
+.status-pill-active {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--accent-emerald-light);
+  border: 1px solid var(--accent-emerald-border);
+  color: var(--text-emerald);
+}
+
+.granted-date-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.protected-action-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.btn-revoke-admin {
+  padding: 0.35rem 0.75rem;
+  background: var(--accent-rose-light);
+  border: 1px solid var(--accent-rose-border);
+  color: var(--text-rose);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-revoke-admin:hover {
+  background: var(--accent-rose);
+  color: #fff;
+}
+
+

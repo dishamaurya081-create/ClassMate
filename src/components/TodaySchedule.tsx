@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ClassItem, ClassItemWithStatus } from '../types/timetable';
 
-import { ClockIcon, MapPinIcon, UserIcon, EditIcon, TrashIcon, CalendarIcon } from './Icons';
+import { ClockIcon, MapPinIcon, UserIcon, EditIcon, TrashIcon, CalendarIcon, BanIcon } from './Icons';
 import { formatTimeRange } from '../utils/timeUtils';
 
 interface TodayScheduleProps {
@@ -9,6 +9,7 @@ interface TodayScheduleProps {
   dayName: string;
   onEditClass: (item: ClassItem) => void;
   onDeleteClass: (item: ClassItem) => void;
+  cancellationsMap?: Record<string, { isCancelled: boolean; reason?: string }>;
 }
 
 export const TodaySchedule: React.FC<TodayScheduleProps> = ({
@@ -16,6 +17,7 @@ export const TodaySchedule: React.FC<TodayScheduleProps> = ({
   dayName,
   onEditClass,
   onDeleteClass,
+  cancellationsMap = {},
 }) => {
   return (
     <section aria-labelledby="today-schedule-title">
@@ -38,9 +40,17 @@ export const TodaySchedule: React.FC<TodayScheduleProps> = ({
       ) : (
         <div className="classes-list">
           {classes.map((item) => {
+            const cancellation = cancellationsMap[item.id];
+            const isCancelled = cancellation?.isCancelled;
+
             let statusClass = 'status-upcoming';
-            if (item.status === 'completed') statusClass = 'status-completed';
-            if (item.status === 'current') statusClass = 'status-current';
+            if (isCancelled) {
+              statusClass = 'status-cancelled';
+            } else if (item.status === 'completed') {
+              statusClass = 'status-completed';
+            } else if (item.status === 'current') {
+              statusClass = 'status-current';
+            }
 
             return (
               <article
@@ -53,10 +63,23 @@ export const TodaySchedule: React.FC<TodayScheduleProps> = ({
                     <ClockIcon size={14} />
                     <span>{formatTimeRange(item.startTime, item.endTime)}</span>
                   </div>
-                  <span className={`card-status-indicator ${item.status}`}>
-                    {item.statusLabel}
-                  </span>
+                  {isCancelled ? (
+                    <span className="card-status-indicator cancelled">
+                      Cancelled
+                    </span>
+                  ) : (
+                    <span className={`card-status-indicator ${item.status}`}>
+                      {item.statusLabel}
+                    </span>
+                  )}
                 </div>
+
+                {isCancelled && cancellation?.reason && (
+                  <div className="class-cancellation-banner">
+                    <BanIcon size={13} />
+                    <span>{cancellation.reason}</span>
+                  </div>
+                )}
 
                 <div className="class-card-body">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
